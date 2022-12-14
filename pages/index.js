@@ -1,8 +1,30 @@
 import Head from 'next/head'
+import Web3 from 'web3'
 import styles from '../styles/Home.module.css'
 import 'bulma/css/bulma.css'
+import { useState } from 'react'
 
 export default function Home() {
+  const [web3,setWeb3]=useState();
+  const [address,setAddress]=useState();
+
+  const connectWalletHandler = async () => {
+    // Check if Metamask is installed
+    if (typeof window !== 'undefined' && typeof window.ethereum !== 'undefined'){
+      try {
+        await window.ethereum.request({method: 'eth_requestAccounts'})
+        const web3 = new Web3(window.ethereum)
+        setWeb3(web3)
+        const accounts = await web3.eth.getAccounts()
+        setAddress(accounts[0])
+      } catch (error) {
+        console.log(error.message)
+      }
+    }else {
+      alert('Please Install Metamask')
+    }
+  }
+
   return (
     <div >
       <Head>
@@ -18,7 +40,7 @@ export default function Home() {
               <h1>Lottery App</h1>
             </div>
             <div className="navbar-end">
-              <button className='button is-link'>Connect Wallet</button>
+              <button onClick={connectWalletHandler} className='button is-link'>Connect Wallet</button>
             </div>
           </div>
         </nav>
